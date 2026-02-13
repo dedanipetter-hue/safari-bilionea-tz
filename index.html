@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8">
+<title>Safari ya Kuwa Bilionea TZ</title>
+
+<style>
+body{
+    background:#0f0f0f;
+    font-family:Arial, sans-serif;
+    color:white;
+    text-align:center;
+    margin:0;
+}
+.container{
+    max-width:500px;
+    margin:auto;
+    padding:20px;
+}
+h1{color:#00ff99;}
+
+.stat{
+    margin-top:15px;
+    text-align:left;
+    font-size:14px;
+}
+
+.bar-container{
+    background:#222;
+    border-radius:10px;
+    overflow:hidden;
+    height:20px;
+}
+
+.bar{
+    height:100%;
+    text-align:center;
+    font-size:12px;
+    line-height:20px;
+    font-weight:bold;
+}
+
+.health{background:#00ff99;}
+.stress{background:#ff3b3b;}
+.happiness{background:#ffc400; color:black;}
+.respect{background:#00aaff;}
+.hunger{background:#ff8800;}
+
+button{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border:none;
+    border-radius:10px;
+    font-size:15px;
+    cursor:pointer;
+}
+
+.primary{background:#00ff99;}
+.secondary{background:#333; color:white;}
+
+#eventBox{
+    margin:20px 0;
+    padding:15px;
+    background:#1c1c1c;
+    border-radius:10px;
+    min-height:60px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>Safari ya Kuwa Bilionea TZ</h1>
+
+<div>🎂 Umri: <span id="age"></span> yrs</div>
+<div>📅 Muda: <span id="time"></span></div>
+<div>💰 Pesa: <span id="money"></span> TZS</div>
+
+<div class="stat">❤️ Afya</div>
+<div class="bar-container"><div class="bar health" id="healthBar"></div></div>
+
+<div class="stat">😡 Msongo</div>
+<div class="bar-container"><div class="bar stress" id="stressBar"></div></div>
+
+<div class="stat">😊 Furaha</div>
+<div class="bar-container"><div class="bar happiness" id="happinessBar"></div></div>
+
+<div class="stat">⭐ Heshima</div>
+<div class="bar-container"><div class="bar respect" id="respectBar"></div></div>
+
+<div class="stat">🍛 Njaa</div>
+<div class="bar-container"><div class="bar hunger" id="hungerBar"></div></div>
+
+<div id="eventBox">Maisha yanaanza...</div>
+
+<button class="secondary" onclick="eat()">Kula Chakula (20K)</button>
+<button class="secondary" onclick="work()">Fanya Kazi</button>
+<button class="secondary" onclick="rest()">Pumzika</button>
+<button class="secondary" onclick="gym()">Gym</button>
+
+</div>
+
+<script>
+
+let player = {
+    money: 200000,
+    health: 80,
+    stress: 20,
+    happiness: 60,
+    respect: 5,
+    hunger: 30,
+    age: 22,
+    months: 0
+};
+
+const events = [
+{ text:"Umefanya deal ndogo!", money:300000 },
+{ text:"Biashara imepata hasara!", money:-200000, stress:15 },
+{ text:"Umeugua malaria!", money:-50000, health:-15 },
+{ text:"Umechelewa kulipa kodi!", money:-100000, stress:10 },
+{ text:"Umepewa tip kazini!", money:150000, happiness:10 },
+{ text:"Ugomvi nyumbani!", stress:20, happiness:-15 },
+{ text:"Umealikwa harusi!", money:-50000, happiness:15 }
+];
+
+function updateUI(){
+    document.getElementById("money").innerText = player.money.toLocaleString();
+    document.getElementById("age").innerText = player.age;
+    document.getElementById("time").innerText = "Miezi " + player.months;
+
+    updateBar("healthBar", player.health);
+    updateBar("stressBar", player.stress);
+    updateBar("happinessBar", player.happiness);
+    updateBar("respectBar", player.respect);
+    updateBar("hungerBar", player.hunger);
+}
+
+function updateBar(id,value){
+    let bar=document.getElementById(id);
+    bar.style.width=value+"%";
+    bar.innerText=value+"%";
+}
+
+function normalize(){
+    player.health=Math.max(0,Math.min(100,player.health));
+    player.stress=Math.max(0,Math.min(100,player.stress));
+    player.happiness=Math.max(0,Math.min(100,player.happiness));
+    player.respect=Math.max(0,Math.min(100,player.respect));
+    player.hunger=Math.max(0,Math.min(100,player.hunger));
+
+    if(player.money<=0){ alert("Umefilisika!"); location.reload(); }
+    if(player.health<=0){ alert("Afya imeisha!"); location.reload(); }
+    if(player.stress>=100){ alert("Msongo umekuzidi!"); location.reload(); }
+    if(player.hunger>=100){ alert("Umefariki kwa njaa!"); location.reload(); }
+}
+
+function passTime(){
+    player.months+=1;
+    if(player.months%12===0){ player.age++; }
+
+    player.hunger+=10;
+    player.stress+=5;
+
+    randomEvent();
+    normalize();
+    updateUI();
+}
+
+function randomEvent(){
+    let e=events[Math.floor(Math.random()*events.length)];
+    document.getElementById("eventBox").innerText="Miezi imepita... "+e.text;
+
+    player.money+=e.money||0;
+    player.health+=e.health||0;
+    player.stress+=e.stress||0;
+    player.happiness+=e.happiness||0;
+    player.respect+=e.respect||0;
+}
+
+function eat(){
+    if(player.money>=20000){
+        player.money-=20000;
+        player.hunger-=30;
+        player.health+=5;
+        document.getElementById("eventBox").innerText="Umekula chakula kizuri!";
+        passTime();
+    }
+}
+
+function work(){
+    player.money+=100000;
+    player.stress+=10;
+    player.happiness-=5;
+    document.getElementById("eventBox").innerText="Umefanya kazi!";
+    passTime();
+}
+
+function rest(){
+    player.stress-=20;
+    player.health+=5;
+    document.getElementById("eventBox").innerText="Umepumzika!";
+    passTime();
+}
+
+function gym(){
+    player.money-=30000;
+    player.health+=15;
+    player.stress-=10;
+    document.getElementById("eventBox").innerText="Umeenda Gym!";
+    passTime();
+}
+
+updateUI();
+
+</script>
+</body>
+</html>
